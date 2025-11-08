@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翻译扩展测试页面</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        .test-section h3 {
+            color: #555;
+            margin-top: 0;
+        }
+        .test-text {
+            font-size: 16px;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        .instructions {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .instructions h3 {
+            color: #0c5460;
+            margin-top: 0;
+        }
+        .instructions ol {
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 翻译扩展测试页面</h1>
+        
+        <div class="instructions">
+            <h3>📋 测试说明</h3>
+            <ol>
+                <li>请先安装并启用翻译扩展</li>
+                <li>选择下面的任意文本进行测试</li>
+                <li>观察翻译结果是否正确</li>
+                <li>点击切换语言按钮测试双向翻译</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h3>🇨🇳 中文测试文本</h3>
+            <div class="test-text">你好，这是一个测试页面。请选择这段中文文本，看看是否能正确翻译成英文。</div>
+            <div class="test-text">人工智能正在改变世界，让我们的生活变得更加便利。</div>
+            <div class="test-text">春天来了，花儿开了，鸟儿在歌唱。</div>
+        </div>
+
+        <div class="test-section">
+            <h3>🇺🇸 English Test Text</h3>
+            <div class="test-text">Hello, this is a test page. Please select this English text to see if it can be correctly translated into Chinese.</div>
+            <div class="test-text">Artificial intelligence is changing the world and making our lives more convenient.</div>
+            <div class="test-text">Spring has come, flowers are blooming, and birds are singing.</div>
+        </div>
+
+        <div class="test-section">
+            <h3>🌏 Mixed Language Test</h3>
+            <div class="test-text">This is English mixed with 中文. The extension should detect the main language.</div>
+            <div class="test-text">人工智能 AI technology 正在改变我们的 daily life 日常生活。</div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Long Text Test</h3>
+            <div class="test-text">
+                在这个快速发展的数字时代，技术正在以前所未有的速度改变着我们的生活。从智能手机到人工智能，从云计算到区块链，每一项创新都在重新定义我们的工作方式和生活方式。全球化的进程让世界各地的人们更加紧密地联系在一起，跨文化交流变得越来越重要。语言不再是障碍，而是连接不同文化的桥梁。
+            </div>
+        </div>
+    </div>
+</body>
+</html>
