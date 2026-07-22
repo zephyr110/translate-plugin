@@ -1,0 +1,11 @@
+{
+  "name": "translate-plugin",
+  "version": "1.0.0",
+  "description": "划词翻译助手 - Chrome 浏览器划词翻译插件",
+  "private": true,
+  "scripts": {
+    "build": "node src/build.js"
+  },
+  "keywords": ["chrome-extension", "translation"],
+  "license": "MIT"
+}
