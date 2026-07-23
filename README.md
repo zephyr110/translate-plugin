@@ -1,163 +1,52 @@
-# 划词翻译助手 - Chrome 浏览器插件
+# 划词翻译助手
 
-一个简单易用的 Chrome 浏览器插件，支持页面划词翻译功能，实现中英文自动互译。
+Chrome 浏览器插件，页面划选中英文自动互译。
 
-![](https://cdn.jsdelivr.net/gh/tienouc/blog-img/20251108192416345.gif)
+## 功能
 
-## 功能特点
+- **划词翻译** — 选中文本自动弹出翻译结果
+- **双向翻译** — 中文→英文，英文→中文，自动检测
+- **三级回退** — 百度翻译 → Google 翻译 → LibreTranslate
+- **shadcn/ui 风格** — HSL 色彩系统 + 暗色模式自适应，Lucide 图标
+- **翻译统计** — 今日/累计计数，自动跨天重置
 
-- ✅ **页面划词翻译**：在任何网页上划选文本即可自动翻译
-- ✅ **智能语言检测**：基于 CJK/Latin 字符比例（25% 阈值）自动判断翻译方向
-- ✅ **双向翻译**：中文→英文，英文→中文自动切换，支持 ⇄ 一键反向翻译
-- ✅ **三级 API 回退**：百度翻译 → Google 翻译 → LibreTranslate，自动降级
-- ✅ **shadcn/ui 设计风格**：干净、现代的 UI，HSL 色彩系统 + 系统暗色模式自适应
-- ✅ **Lucide 图标**：一致描边风格的 SVG 图标
-- ✅ **翻译统计**：记录今日和累计翻译次数（自动跨天重置）
-- ✅ **智能弹窗定位**：四边边界检测，防止弹出屏幕
-- ✅ **自动翻译开关**：可随时开启/关闭划词翻译
-- ✅ **XSS 防护**：翻译结果 HTML 转义，安全渲染
+## 安装
 
-## 快速开始
-
-### 1. 构建插件
 ```bash
 npm install
 npm run build
 ```
-产物在 `dist/` 目录。
 
-```bash
-npm run build   # 生成 dist/content.js 和 dist/popup.js
-```
-
-构建脚本 (`src/build.js`) 将 `src/` 下的模块按依赖顺序拼接，零外部依赖。
-
-### 2. 加载到 Chrome
-
-1. 打开 `chrome://extensions/`
-2. 开启"开发者模式"
-3. 点击"加载已解压的扩展程序"
-4. 选择 `dist/` 文件夹
-5. 插件图标将出现在浏览器工具栏中
-
-### 3. 使用
-
-1. 在任意网页上划选英文或中文文本
-2. 翻译弹窗自动出现
-3. 点击 ⇄ 按钮反向翻译
-4. 点击弹窗外部关闭
-
-## 项目结构
-
-```
-translate-plugin/
-├── src/
-│   ├── content/
-│   │   ├── index.ts              # 内容脚本入口
-│   │   └── popup-ui.ts           # 翻译弹窗 DOM 渲染（XSS 安全）
-│   ├── popup/
-│   │   └── index.ts              # 弹出页入口
-│   ├── translators/
-│   │   ├── types.ts              # Translator 接口定义
-│   │   ├── baidu.ts              # 百度翻译适配器
-│   │   ├── google.ts             # Google 翻译适配器
-│   │   ├── libretranslate.ts     # LibreTranslate 适配器
-│   │   └── chain.ts              # 翻译链（按优先级回退）
-│   ├── utils/
-│   │   ├── md5.ts                # MD5 签名（百度翻译）
-│   │   ├── language.ts           # 语言检测
-│   │   ├── storage.ts            # chrome.storage 类型化封装
-│   │   └── strings.ts            # UI 文案（i18n-ready）
-│   └── types/
-│       └── index.ts              # 共享类型定义
-├── public/
-│   ├── popup.html                # 弹出页 HTML
-│   └── test.html                 # 翻译测试页
-├── styles/
-│   ├── popup.css                 # 弹出页样式（CSS 变量 + 暗色模式）
-│   └── content.css               # 页面内弹窗样式（CSS 变量 + 暗色模式）
-├── icons/                        # 扩展图标（PNG + SVG）
-├── scripts/
-│   └── build.mjs                 # 构建脚本（Vite 双入口独立打包）
-├── manifest.json                 # 扩展清单
-├── package.json
-├── tsconfig.json
-└── vite.config.ts
-```
-
-## 技术架构
-
-### 翻译 API 优先级
-
-| 优先级 | 引擎 | API 地址 | 配置要求 |
-|--------|------|----------|----------|
-| 1 | 百度翻译 | `api.fanyi.baidu.com` | 需配置 `appid` + `key` |
-| 2 | Google 翻译 | `translate.googleapis.com` | 无需配置 |
-| 3 | LibreTranslate | `libretranslate.de` | 无需配置 |
-
-### 模块架构
-
-源码按职责拆分为 14 个独立模块，通过 `src/build.js` 拼接为两个输出文件。每个模块通过 `__TP` 命名空间挂载导出，模块间依赖由构建顺序显式控制。
-
-### UI 设计
-
-- **shadcn/ui 风格**：HSL 色彩令牌系统，`border` + `shadow-sm` + `rounded` 卡片组件
-- **Lucide 图标**：7 个内联 SVG（Sparkles、MousePointerClick、MessageSquareText、Zap、BarChart3、ArrowLeftRight、Trash2）
-- **暗色模式**：`prefers-color-scheme: dark` 媒体查询，自动切换
-- **弹出页宽度**：300px，响应式适配
-
-## 设置选项
-
-点击插件图标打开设置面板：
-
-- **自动翻译**：开启/关闭划词翻译（默认开启）
-- **翻译统计**：今日和累计翻译次数
-- **清除统计**：重置翻译数据
+加载 `dist/` 为 Chrome 未打包扩展，详见 [INSTALL.md](INSTALL.md)。
 
 ## 配置百度翻译（可选）
 
-在扩展控制台执行：
+在扩展 DevTools 控制台执行：
 
 ```js
-chrome.storage.sync.set({
-  baiduAppId: "你的appid",
-  baiduAppKey: "你的key"
-});
+chrome.storage.sync.set({ baiduAppId: "id", baiduAppKey: "key" })
 ```
 
 未配置时自动回退到 Google → LibreTranslate。
 
+## 项目结构
+
 ```
-"host_permissions": [
-  "https://api.fanyi.baidu.com/*",
-  "https://translate.googleapis.com/*",
-  "https://libretranslate.de/*"
-]
+src/
+├── content/          # 内容脚本（划词监听 + 弹窗渲染）
+├── popup/            # 弹出页（设置 + 统计）
+├── translators/      # 翻译适配器（Baidu / Google / LibreTranslate）
+├── utils/            # MD5 / 语言检测 / storage 封装 / 文案
+└── types/            # 共享类型
+public/               # popup.html, test.html
+styles/               # popup.css, content.css
+scripts/build.mjs     # Vite 双入口构建
 ```
 
-`chrome.*` API 调用均已做环境守卫处理，本地预览不会报错。
+## 技术栈
 
-## 开发计划
-
-- [ ] 添加更多翻译 API 选项
-- [ ] 支持更多语言对
-- [ ] 添加单词发音功能
-- [ ] 支持翻译历史记录
-- [ ] 添加自定义快捷键
-
-## 问题反馈
-
-- 在项目中提交 Issue
-- 提供详细的错误信息和复现步骤
-- 附上相关截图和浏览器版本信息
+TypeScript · Vite · Chrome Manifest V3 · shadcn/ui 设计令牌
 
 ## 许可证
 
 MIT
-
-## 致谢
-
-- [shadcn/ui](https://ui.shadcn.com) 设计系统
-- [Lucide](https://lucide.dev) 图标库
-- Baidu Translate API / Google Translate API / LibreTranslate
-- Chrome Extensions 开发文档
