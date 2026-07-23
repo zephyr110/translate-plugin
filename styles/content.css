@@ -1,0 +1,131 @@
+/* ── Design Tokens (shadcn-style, scoped to translation popup to avoid leaking onto host pages) ── */
+.translation-popup {
+  --tp-background: 0 0% 100%;
+  --tp-foreground: 240 10% 3.9%;
+  --tp-card: 0 0% 100%;
+  --tp-card-foreground: 240 10% 3.9%;
+  --tp-primary: 221.2 83.2% 53.3%;
+  --tp-primary-foreground: 210 40% 98%;
+  --tp-muted: 240 4.8% 95.9%;
+  --tp-muted-foreground: 240 3.8% 46.1%;
+  --tp-destructive: 0 84.2% 60.2%;
+  --tp-destructive-foreground: 0 0% 98%;
+  --tp-border: 240 5.9% 90%;
+  --tp-ring: 221.2 83.2% 53.3%;
+  --tp-radius: 0.5rem;
+  --tp-radius-sm: calc(0.5rem - 0.125rem);
+  --tp-font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  .translation-popup {
+    --tp-background: 240 10% 3.9%;
+    --tp-foreground: 0 0% 98%;
+    --tp-card: 240 10% 5.9%;
+    --tp-card-foreground: 0 0% 98%;
+    --tp-muted: 240 3.7% 15.9%;
+    --tp-muted-foreground: 240 5% 64.9%;
+    --tp-destructive: 0 62.8% 30.6%;
+    --tp-destructive-foreground: 0 85.7% 97.3%;
+    --tp-border: 240 3.7% 15.9%;
+  }
+}
+
+/* ── Translation Popup ── */
+.translation-popup {
+  position: absolute;
+  background: hsl(var(--tp-card));
+  color: hsl(var(--tp-card-foreground));
+  border: 1px solid hsl(var(--tp-border));
+  border-radius: var(--tp-radius);
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  padding: 0;
+  min-width: 200px;
+  max-width: 320px;
+  z-index: 10000;
+  font-family: var(--tp-font-sans);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  overflow: hidden;
+  animation: tp-slide-up 0.15s ease-out;
+}
+
+@keyframes tp-slide-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.translation-content {
+  padding: 0.75rem 1rem;
+}
+
+/* ── Loading ── */
+.translation-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: hsl(var(--tp-muted-foreground));
+  padding: 0.75rem 0;
+  font-size: 0.8125rem;
+}
+.translation-loading::before {
+  content: "";
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 2px solid hsl(var(--tp-border));
+  border-top-color: hsl(var(--tp-primary));
+  border-radius: 50%;
+  animation: tp-spin 0.6s linear infinite;
+}
+@keyframes tp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Original text ── */
+.translation-original {
+  padding-bottom: 0.625rem;
+  margin-bottom: 0.625rem;
+  border-bottom: 1px solid hsl(var(--tp-border));
+}
+.translation-original .translation-text {
+  font-size: 0.8125rem;
+  color: hsl(var(--tp-muted-foreground));
+}
+
+/* ── Translated result ── */
+.translation-result .translation-text {
+  font-size: 0.9375rem;
+  color: hsl(var(--tp-foreground));
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.translation-text {
+  word-break: break-word;
+}
+
+/* ── Error ── */
+.translation-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  color: hsl(var(--tp-destructive-foreground));
+  background: hsl(var(--tp-destructive));
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--tp-radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .translation-popup {
+    min-width: 240px;
+    max-width: 90vw;
+    left: 5vw !important;
+    right: 5vw;
+  }
+}

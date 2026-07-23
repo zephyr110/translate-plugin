@@ -8,14 +8,15 @@
     "storage"
   ],
   "host_permissions": [
+    "https://api.fanyi.baidu.com/*",
     "https://translate.googleapis.com/*",
-    "https://api-free.deepl.com/*"
+    "https://libretranslate.de/*"
   ],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"],
-      "css": ["styles.css"]
+      "css": ["content.css"]
     }
   ],
   "action": {

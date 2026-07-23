@@ -18,14 +18,18 @@
 
 ## 安装方法
 
-### 1. 下载插件
-将本项目的所有文件下载到本地文件夹。
+### 1. 构建插件
+```bash
+npm install
+npm run build
+```
+产物在 `dist/` 目录。
 
 ### 2. 加载插件到Chrome
 1. 打开Chrome浏览器，输入地址：`chrome://extensions/`
 2. 开启右上角的"开发者模式"
 3. 点击"加载已解压的扩展程序"
-4. 选择包含插件文件的文件夹
+4. 选择 `dist/` 文件夹
 5. 插件图标将出现在浏览器工具栏中
 
 ### 3. 使用插件
@@ -36,21 +40,39 @@
 ## 文件结构
 
 ```
-chrome-translation-extension/
-├── manifest.json           # 插件配置
-├── content.js              # 内容脚本（划词与翻译逻辑）
-├── styles.css              # 页面内翻译弹窗样式
-├── popup.html              # 扩展弹出页
-├── popup.css               # 弹出页样式（Ant Design 紧凑）
-├── popup.js                # 弹出页脚本（环境守卫、开关等）
-├── icons/                  # 扩展图标（PNG+SVG）
-│   ├── icon16.png / icon16.svg
-│   ├── icon24.png          # 工具栏推荐尺寸
-│   ├── icon32.png / icon32.svg
-│   ├── icon48.png / icon48.svg
-│   ├── icon64.png / icon64.svg
-│   └── icon128.png / icon128.svg
-└── README.md               # 说明文档
+translate-plugin/
+├── src/
+│   ├── content/
+│   │   ├── index.ts              # 内容脚本入口
+│   │   └── popup-ui.ts           # 翻译弹窗 DOM 渲染（XSS 安全）
+│   ├── popup/
+│   │   └── index.ts              # 弹出页入口
+│   ├── translators/
+│   │   ├── types.ts              # Translator 接口定义
+│   │   ├── baidu.ts              # 百度翻译适配器
+│   │   ├── google.ts             # Google 翻译适配器
+│   │   ├── libretranslate.ts     # LibreTranslate 适配器
+│   │   └── chain.ts              # 翻译链（按优先级回退）
+│   ├── utils/
+│   │   ├── md5.ts                # MD5 签名（百度翻译）
+│   │   ├── language.ts           # 语言检测
+│   │   ├── storage.ts            # chrome.storage 类型化封装
+│   │   └── strings.ts            # UI 文案（i18n-ready）
+│   └── types/
+│       └── index.ts              # 共享类型定义
+├── public/
+│   ├── popup.html                # 弹出页 HTML
+│   └── test.html                 # 翻译测试页
+├── styles/
+│   ├── popup.css                 # 弹出页样式（CSS 变量 + 暗色模式）
+│   └── content.css               # 页面内弹窗样式（CSS 变量 + 暗色模式）
+├── icons/                        # 扩展图标（PNG + SVG）
+├── scripts/
+│   └── build.mjs                 # 构建脚本（Vite 双入口独立打包）
+├── manifest.json                 # 扩展清单
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
 ```
 
 ## 技术实现
@@ -126,9 +148,9 @@ chrome.storage.sync.set({
 
 ```
 "host_permissions": [
+  "https://api.fanyi.baidu.com/*",
   "https://translate.googleapis.com/*",
-  "https://api-free.deepl.com/*",
-  "https://api.fanyi.baidu.com/*"
+  "https://libretranslate.de/*"
 ]
 ```
 

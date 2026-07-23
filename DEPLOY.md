@@ -3,6 +3,8 @@
 本指南描述如何将“划词翻译助手”打包并发布到浏览器扩展市场。默认以 Chrome Web Store 为例，其它平台的要点见文末。
 
 ## 准备工作
+- 安装依赖：`npm install`
+- 构建项目：`npm run build`（产物在 `dist/` 目录）
 - 确认 `manifest.json` 为 Manifest V3。
 - 图标建议使用 PNG，并确保尺寸齐全：`16/32/48/64/128`，工具栏推荐 `16/24/32`。
 - 将工具栏与扩展管理页图标路径指向 `icons/*.png`。
@@ -27,7 +29,7 @@
   "host_permissions": [
     "https://api.fanyi.baidu.com/*",
     "https://translate.googleapis.com/*",
-    "https://api-free.deepl.com/*"
+    "https://libretranslate.de/*"
   ],
   "action": {
     "default_title": "划词翻译助手",
@@ -49,12 +51,12 @@
 ```
 
 ## 打包（生成 ZIP）
+- 先执行 `npm run build`，产物在 `dist/` 目录。
 - 在项目根目录执行：
-  - `zip -r selection-translate-<version>.zip manifest.json content.js popup.html popup.css popup.js styles.css icons/`
-- 打包内容建议仅包含运行所需文件：
-  - `manifest.json`、`content.js`、`popup.*`、`styles.css`、`icons/*.png`。
-  - 文档（`README.md`、`INSTALL.md`）可保留但不是必须。
-  - 排除无关大文件与临时产物。
+  - `cd dist && zip -r ../selection-translate-<version>.zip *`
+- 打包内容为 `dist/` 下所有文件：
+  - `manifest.json`、`content.js`、`popup.js`、`popup.html`、`content.css`、`popup.css`、`icons/`。
+  - 文档与源码可排除。
 
 ## 发布到 Chrome Web Store
 1. 注册开发者账号（一次性费用约 5 美元）。
