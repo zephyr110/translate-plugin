@@ -1,4 +1,4 @@
-# 划词翻译助手 - Chrome浏览器插件
+# 划词翻译助手 - Chrome 浏览器插件
 
 一个简单易用的 Chrome 浏览器插件，支持页面划词翻译功能，实现中英文自动互译。
 
@@ -7,16 +7,17 @@
 ## 功能特点
 
 - ✅ **页面划词翻译**：在任何网页上划选文本即可自动翻译
-- ✅ **智能语言检测**：自动识别源语言并翻译成目标语言
-- ✅ **双向翻译**：中文→英文，英文→中文自动切换
-- ✅ **多API优先级**：优先使用百度翻译，失败回退 Google，最终 LibreTranslate
-- ✅ **优雅弹窗**：美观的翻译结果展示界面
-- ✅ **暗色模式**：支持系统暗色模式
-- ✅ **翻译统计**：记录翻译使用次数
-- ✅ **响应式设计**：适配不同屏幕尺寸
-- ✅ **Ant Design 紧凑风格**：弹出页采用 Ant Design 紧凑样式与暗色自适应
+- ✅ **智能语言检测**：基于 CJK/Latin 字符比例（25% 阈值）自动判断翻译方向
+- ✅ **双向翻译**：中文→英文，英文→中文自动切换，支持 ⇄ 一键反向翻译
+- ✅ **三级 API 回退**：百度翻译 → Google 翻译 → LibreTranslate，自动降级
+- ✅ **shadcn/ui 设计风格**：干净、现代的 UI，HSL 色彩系统 + 系统暗色模式自适应
+- ✅ **Lucide 图标**：一致描边风格的 SVG 图标
+- ✅ **翻译统计**：记录今日和累计翻译次数（自动跨天重置）
+- ✅ **智能弹窗定位**：四边边界检测，防止弹出屏幕
+- ✅ **自动翻译开关**：可随时开启/关闭划词翻译
+- ✅ **XSS 防护**：翻译结果 HTML 转义，安全渲染
 
-## 安装方法
+## 快速开始
 
 ### 1. 构建插件
 ```bash
@@ -25,19 +26,28 @@ npm run build
 ```
 产物在 `dist/` 目录。
 
-### 2. 加载插件到Chrome
-1. 打开Chrome浏览器，输入地址：`chrome://extensions/`
-2. 开启右上角的"开发者模式"
+```bash
+npm run build   # 生成 dist/content.js 和 dist/popup.js
+```
+
+构建脚本 (`src/build.js`) 将 `src/` 下的模块按依赖顺序拼接，零外部依赖。
+
+### 2. 加载到 Chrome
+
+1. 打开 `chrome://extensions/`
+2. 开启"开发者模式"
 3. 点击"加载已解压的扩展程序"
 4. 选择 `dist/` 文件夹
 5. 插件图标将出现在浏览器工具栏中
 
-### 3. 使用插件
-1. 在任意网页上划选需要翻译的文本
-2. 自动弹出翻译结果
-3. 点击弹窗外部关闭翻译窗口
+### 3. 使用
 
-## 文件结构
+1. 在任意网页上划选英文或中文文本
+2. 翻译弹窗自动出现
+3. 点击 ⇄ 按钮反向翻译
+4. 点击弹窗外部关闭
+
+## 项目结构
 
 ```
 translate-plugin/
@@ -75,76 +85,47 @@ translate-plugin/
 └── vite.config.ts
 ```
 
-## 技术实现
+## 技术架构
 
 ### 翻译 API 优先级
-- **百度翻译（首选）**：`https://api.fanyi.baidu.com/api/trans/vip/translate`
-  - 需要在扩展中配置 `appid` 与 `key`（见下文“配置百度翻译”）。
-  - 接口签名：`md5(appid + q + salt + key)`。
-- **Google 翻译（回退）**：`https://translate.googleapis.com/translate_a/single`
-  - `sl=auto` 自动检测源语言；如百度不可用则回退。
-- **LibreTranslate（最终回退）**：`https://libretranslate.de/translate`
-  - 在上述两者均失败时作为兜底。
 
-### 核心功能
-- **文本选择监听**：使用`mouseup`事件监听文本选择
-- **弹窗定位**：基于鼠标位置智能定位
-- **样式注入**：CSS样式自动注入到所有网页
-- **消息通信**：内容脚本与弹出窗口间的通信
+| 优先级 | 引擎 | API 地址 | 配置要求 |
+|--------|------|----------|----------|
+| 1 | 百度翻译 | `api.fanyi.baidu.com` | 需配置 `appid` + `key` |
+| 2 | Google 翻译 | `translate.googleapis.com` | 无需配置 |
+| 3 | LibreTranslate | `libretranslate.de` | 无需配置 |
 
-### 用户体验
-- **延迟显示**：避免干扰正常文本选择操作
-- **智能定位**：防止弹窗超出屏幕边界
-- **响应式设计**：适配移动设备和桌面设备
-- **暗色模式**：根据系统设置自动切换
+### 模块架构
+
+源码按职责拆分为 14 个独立模块，通过 `src/build.js` 拼接为两个输出文件。每个模块通过 `__TP` 命名空间挂载导出，模块间依赖由构建顺序显式控制。
+
+### UI 设计
+
+- **shadcn/ui 风格**：HSL 色彩令牌系统，`border` + `shadow-sm` + `rounded` 卡片组件
+- **Lucide 图标**：7 个内联 SVG（Sparkles、MousePointerClick、MessageSquareText、Zap、BarChart3、ArrowLeftRight、Trash2）
+- **暗色模式**：`prefers-color-scheme: dark` 媒体查询，自动切换
+- **弹出页宽度**：300px，响应式适配
 
 ## 设置选项
 
-点击插件图标可打开设置面板：
+点击插件图标打开设置面板：
 
-- **启用自动翻译**：开启/关闭划词翻译功能
-- **显示发音**：显示单词发音（开发中功能）
-- **翻译统计**：查看今日和累计翻译次数
-- **测试翻译**：在当前页面测试翻译功能
-- **清除统计**：重置翻译统计数据
+- **自动翻译**：开启/关闭划词翻译（默认开启）
+- **翻译统计**：今日和累计翻译次数
+- **清除统计**：重置翻译数据
 
-## 图标配置（Manifest V3）
+## 配置百度翻译（可选）
 
-为确保工具栏与扩展管理页图标显示一致，推荐使用 PNG 并配置如下：
+在扩展控制台执行：
 
-```
-"icons": {
-  "16": "icons/icon16.png",
-  "32": "icons/icon32.png",
-  "48": "icons/icon48.png",
-  "64": "icons/icon64.png",
-  "128": "icons/icon128.png"
-},
-"action": {
-  "default_title": "划词翻译助手",
-  "default_popup": "popup.html",
-  "default_icon": {
-    "16": "icons/icon16.png",
-    "24": "icons/icon24.png",
-    "32": "icons/icon32.png"
-  }
-}
-```
-
-注：工具栏推荐 `16/24/32`；管理页与商店常用 `16/32/48/64/128`。
-
-## 配置百度翻译
-
-扩展首次运行前，请在浏览器控制台为扩展写入百度凭证：
-
-```
+```js
 chrome.storage.sync.set({
   baiduAppId: "你的appid",
   baiduAppKey: "你的key"
 });
 ```
 
-并在 `manifest.json` 的 `host_permissions` 中加入：
+未配置时自动回退到 Google → LibreTranslate。
 
 ```
 "host_permissions": [
@@ -154,17 +135,11 @@ chrome.storage.sync.set({
 ]
 ```
 
-## 注意事项
-
-1. **网络要求**：需要网络连接才能使用翻译功能
-2. **API限制**：免费API有使用频率限制，请勿过度使用
-3. **隐私保护**：插件仅在本地处理文本，不会上传用户数据
-4. **兼容性**：支持 Chrome 88+ 版本
-5. **本地预览**：可用 `python3 -m http.server 8001` 预览 `popup.html`；本地预览无扩展环境，`chrome.*` API 在代码中已做守卫处理。
+`chrome.*` API 调用均已做环境守卫处理，本地预览不会报错。
 
 ## 开发计划
 
-- [ ] 添加更多翻译API选项
+- [ ] 添加更多翻译 API 选项
 - [ ] 支持更多语言对
 - [ ] 添加单词发音功能
 - [ ] 支持翻译历史记录
@@ -172,23 +147,17 @@ chrome.storage.sync.set({
 
 ## 问题反馈
 
-如遇到问题或有功能建议，欢迎通过以下方式反馈：
-
-1. 在项目中提交Issue
-2. 提供详细的错误信息和复现步骤
-3. 附上相关截图和浏览器版本信息
+- 在项目中提交 Issue
+- 提供详细的错误信息和复现步骤
+- 附上相关截图和浏览器版本信息
 
 ## 许可证
 
-本项目采用MIT许可证，详见LICENSE文件。
+MIT
 
 ## 致谢
 
-- Baidu Translate API 提供翻译服务
-- Google Translate API 提供翻译服务
-- LibreTranslate 提供翻译服务
+- [shadcn/ui](https://ui.shadcn.com) 设计系统
+- [Lucide](https://lucide.dev) 图标库
+- Baidu Translate API / Google Translate API / LibreTranslate
 - Chrome Extensions 开发文档
-
-## 其他
-- 本地开发指南：[INSTALL.md](INSTALL.md)
-- 打包发布指南：[DEPLOY.md](DEPLOY.md)
