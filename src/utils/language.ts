@@ -1,14 +1,21 @@
 import type { LanguageDirection } from "../types";
 
-// Covers CJK Unified Ideographs (U+4E00-U+9FFF) and CJK Extension A (U+3400-U+4DBF)
-const CHINESE_CHAR_RE = /[㐀-䶿一-鿿]/;
-
 /**
  * Detect whether the text is primarily Chinese or English,
  * return the translation direction.
+ *
+ * Uses character-count ratio: if Chinese characters outnumber Latin letters,
+ * translate zh→en; otherwise translate en→zh. Pure symbols/numbers default
+ * to en→zh since the user's browser locale is likely Chinese.
  */
 export function detectLanguageDirection(text: string): LanguageDirection {
-  return CHINESE_CHAR_RE.test(text) ? "zh->en" : "en->zh";
+  const chineseCount = text.split(/[㐀-䶿一-鿿]/).length - 1;
+  const latinCount = text.split(/[a-zA-Z]/).length - 1;
+
+  // If neither script is present (e.g. pure numbers/symbols), default en→zh
+  if (chineseCount === 0 && latinCount === 0) return "en->zh";
+
+  return chineseCount > latinCount ? "zh->en" : "en->zh";
 }
 
 /**

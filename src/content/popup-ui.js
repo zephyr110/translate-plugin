@@ -35,7 +35,6 @@ function _isCurrentGen(gen) {
 
 // 显示弹窗（含边界检测定位）
 export function show(x, y) {
-  console.log("[translate] show() called with x=", x, "y=", y, "body=", !!document.body);
   hide();
   _generation++;
 
